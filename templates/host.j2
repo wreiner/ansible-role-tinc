@@ -1,0 +1,6 @@
+{% if _tinc__network.physical_address is defined %}
+Address={{ _tinc__network.physical_address }}
+{% endif %}
+Compression={{ _tinc__network.compression }}
+Subnet={{ _tinc__network.vpn_ip_address}}/32
+Port={{ _tinc__network.port }}

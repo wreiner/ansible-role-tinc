@@ -1,0 +1,6 @@
+{% if _tinc__network.nexthop != "self" %}
+ConnectTo={{ _tinc__network.nexthop }}
+{% endif %}
+Device=/dev/net/tun
+Mode={{ _tinc__network.mode }}
+Name={{ _tinc__network.nodename }}

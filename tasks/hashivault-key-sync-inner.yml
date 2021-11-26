@@ -1,0 +1,17 @@
+---
+- name: "Read tinc host file from Hashicorp Vault"
+  delegate_to: 127.0.0.1
+  become: no
+  hashivault_read:
+    mount_point: "{{ tinc__hashivault_mountpoint }}"
+    secret: "hosts/{{inventory_hostname}}/tinc/{{ _tinc__network.netname }}"
+    key: tinc-host-key
+  ignore_errors: True
+  register: _tinc__is_vpn_member
+
+- name: "Deploy tinc host file"
+  become: yes
+  template:
+    src: "empty-host.j2"
+    dest: "/etc/tinc/{{ _tinc__network.netname }}/hosts/{{ _tinc__hvlist_hostname | regex_replace('\\/$', '') }}"
+    mode: 0640

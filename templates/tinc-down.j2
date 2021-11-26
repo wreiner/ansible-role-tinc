@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Down tinc
+ip address del {{ _tinc__network.vpn_ip_address }}/{{ _tinc__network.netmask }} dev $INTERFACE
+
+# Legacy
+#ifconfig $INTERFACE down
+

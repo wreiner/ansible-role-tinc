@@ -1,0 +1,17 @@
+---
+- hosts: vpnmaster
+  become: yes
+
+  tasks:
+    - archive:
+        path: /etc/tinc/vpn1/hosts
+        dest: /tmp/vpn1-hosts.tar.gz
+
+    - fetch:
+        src: /tmp/vpn1-hosts.tar.gz
+        dest: credentials/vpn1-hosts.tar.gz
+        flat: yes
+
+    - file:
+        state: absent
+        path: /tmp/vpn1-hosts.tar.gz

@@ -1,0 +1,76 @@
+---
+- name: "Ensure tinc netname directory exists"
+  file:
+    path: "/etc/tinc/{{ _tinc__network.netname }}/hosts"
+    recurse: True
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: "Deploy tinc-up file"
+  template:
+    src: tinc-up.j2
+    dest: "/etc/tinc/{{ _tinc__network.netname }}/tinc-up"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: "Deploy tinc-down file"
+  template:
+    src: tinc-down.j2
+    dest: "/etc/tinc/{{ _tinc__network.netname }}/tinc-down"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: "Deploy tinc.conf file"
+  template:
+    src: tinc.conf.j2
+    dest: "/etc/tinc/{{ _tinc__network.netname }}/tinc.conf"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: "Check if key already exists"
+  stat:
+    path: "/etc/tinc/{{ _tinc__network.netname }}/rsa_key.priv"
+  register: _tinc__key_stat
+
+- name: "Create hosts file"
+  template:
+    src: host.j2
+    dest: "/etc/tinc/{{ _tinc__network.netname }}/hosts/{{ _tinc__network.nodename }}"
+    mode: 0644
+  when: not _tinc__key_stat.stat.exists
+
+- name: "Create tinc private key (and append public key to tincd hosts file)"
+  shell: tincd -n {{ _tinc__network.netname }} -K4096
+  args:
+    creates: /etc/tinc/{{ _tinc__network.netname }}/rsa_key.priv
+  when: not _tinc__key_stat.stat.exists
+
+- include_tasks: local-key-sync
+  when: not tinc__hashivault_sync
+
+- include_tasks: hashivault-key-sync
+  when: not tinc__hashivault_sync
+
+# - name: "Open port for tinc connection"
+#   ufw:
+#     rule: allow
+#     port: "{{ _tinc__network.port }}"
+#   when: ansible_os_family == 'Debian'
+
+# - name: "Restart ufw"
+#   service:
+#     name: ufw
+#     state: restarted
+#   when: ansible_os_family == 'Debian'
+
+- name: "Enable and start tinc network"
+  service:
+    name: "tinc@{{ _tinc__network.netname }}"
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

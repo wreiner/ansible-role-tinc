@@ -1,0 +1,6 @@
+## This file contains all names of the networks to be started on system startup.
+{% for item in tinc__client_settings %}
+{% if item.autostart == "yes" %}
+{{ item.netname }}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,47 @@
+---
+- name: "Ensure temp directory exists"
+  file:
+    path: "/tmp/tinc/{{ _tinc__network.netname }}/hosts"
+    recurse: True
+    state: directory
+    mode: 0700
+    owner: root
+    group: root
+
+- name: "Fetch tinc host file after key creation"
+  fetch:
+    src: "/etc/tinc/{{ _tinc__network.netname }}/hosts/{{ _tinc__network.nodename }}"
+    dest: "/tmp/tinc/{{ _tinc__network.netname }}/hosts/{{ inventory_hostname }}"
+    flat: yes
+    mode: 0600
+    owner: root
+    group: root
+
+- name: "Write tinc host file to Hashicorp Vault"
+  delegate_to: 127.0.0.1
+  become: no
+  hashivault_write_from_file:
+    mount_point: "{{ tinc__hashivault_mountpoint }}"
+    update: yes
+    secret: "hosts/{{inventory_hostname}}/tinc/{{ _tinc__network.netname }}"
+    key: tinc-host-key
+    path: "/tmp/tinc/{{ _tinc__network.netname }}/hosts/{{ inventory_hostname }}"
+
+- name: "Remove temporary tinc host file"
+  file:
+    path: "/tmp/tinc/{{ _tinc__network.netname }}/hosts/{{ inventory_hostname }}"
+    state: absent
+
+- name: "Get all hosts from Hashicorp Vault"
+  delegate_to: 127.0.0.1
+  become: no
+  hashivault_list:
+    mount_point: "{{ tinc__hashivault_mountpoint }}"
+    secret: 'hosts'
+  register: '_tinc__hvlist_hosts'
+
+- name: "Sync all hosts from Hashicorp Vault for VPN network"
+  include_tasks: hashivault-key-sync-inner.yml
+  loop: "{{ _tinc__hvlist_hosts.secrets }}"
+  loop_control:
+    loop_var: _tinc__hvlist_hostname

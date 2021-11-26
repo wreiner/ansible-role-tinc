@@ -1,0 +1,11 @@
+---
+- name: "Fetch tinc hosts file after key creation"
+  fetch:
+    src: "/etc/tinc/{{ _tinc__network.netname }}/hosts/{{ _tinc__network.nodename }}"
+    dest: "credentials/{{ _tinc__network.netname }}/hosts/{{ inventory_hostname }}"
+    flat: yes
+
+- name: "Sync the fetched tinc hosts files on each host"
+  synchronize:
+    src: "credentials/{{ _tinc__network.netname }}/hosts/"
+    dest: "/etc/tinc/{{ _tinc__network.netname }}/hosts/"

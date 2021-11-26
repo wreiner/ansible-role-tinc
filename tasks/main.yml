@@ -1,0 +1,13 @@
+---
+- include_tasks: "install.yml"
+
+- name: "Setup tinc config"
+  include_tasks: generate-tinc-config.yml
+  loop: "{{ tinc__client_settings }}"
+  loop_control:
+    loop_var: _tinc__network
+
+- name: create /etc/tinc/nets.boot file from template
+  template:
+    src=nets.boot.j2
+    dest=/etc/tinc/nets.boot

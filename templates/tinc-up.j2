@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Up tinc, add IP
+ip address add {{ _tinc__network.vpn_ip_address }}/{{ _tinc__network.netmask }} dev $INTERFACE
+ip link set dev "${INTERFACE}" up
+
+# Legacy
+#ifconfig $INTERFACE {{ _tinc__network.vpn_ip_address }} netmask {{ _tinc__network.netmask }} up
+
+#route add -net 192.168.98.0 netmask 255.255.255.0 gw 192.168.98.1 dev $INTERFACE
+
