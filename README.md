@@ -1,4 +1,4 @@
-# tinc
+# Ansible Role: tinc
 
 This role installs and configures tinc vpn.
 
@@ -38,7 +38,17 @@ tinc__client_settings:
     autostart: "no"
 ```
 
-## Helpers
+## Optional variables
 
-The play in fetch-tinc-hosts.yml fetches all known hosts files from an existing
-master.
+If Hashicorp Vault is used it is possible to sync the hosts via Hashicorp Vault.
+For this to work the Hashicorp Vault Credentials need to be provided as an approle.
+To use the Vault sync set _tinc__hashivault_sync_ to _true_ and add the mountpoint of your secret via _tinc__hashivault_mountpoint_:
+
+```
+tinc__hashivault_sync: true
+tinc__hashivault_mountpoint: ansible-hosts
+```
+
+## Helpers (deprecated)
+
+The play in fetch-tinc-hosts.yml fetches all known hosts files from an existing master.
