@@ -1,0 +1,7 @@
+---
+- name: "Check for mandatory variables"
+  fail:
+    msg: 'variable {{item}} not defined'
+  when: item is not defined
+  with_items:
+    - tinc__client_settings
