@@ -50,10 +50,10 @@
     creates: /etc/tinc/{{ _tinc__network.netname }}/rsa_key.priv
   when: not _tinc__key_stat.stat.exists
 
-- include_tasks: local-key-sync
+- include_tasks: local-key-sync.yml
   when: not tinc__hashivault_sync
 
-- include_tasks: hashivault-key-sync
+- include_tasks: hashivault-key-sync.yml
   when: tinc__hashivault_sync
 
 # - name: "Open port for tinc connection"
