@@ -21,6 +21,7 @@
   delegate_to: 127.0.0.1
   become: no
   hashivault_write_from_file:
+    authtype: approle
     mount_point: "{{ tinc__hashivault_mountpoint }}"
     update: yes
     secret: "hosts/{{inventory_hostname}}/tinc/{{ _tinc__network.netname }}"
@@ -36,6 +37,7 @@
   delegate_to: 127.0.0.1
   become: no
   hashivault_list:
+    authtype: approle
     mount_point: "{{ tinc__hashivault_mountpoint }}"
     secret: 'hosts'
   register: '_tinc__hvlist_hosts'
