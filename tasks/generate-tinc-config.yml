@@ -54,7 +54,7 @@
   when: not tinc__hashivault_sync
 
 - include_tasks: hashivault-key-sync
-  when: not tinc__hashivault_sync
+  when: tinc__hashivault_sync
 
 # - name: "Open port for tinc connection"
 #   ufw:
